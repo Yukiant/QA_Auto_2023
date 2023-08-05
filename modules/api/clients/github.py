@@ -12,13 +12,17 @@ class GitHub:
         body = r.json()
         return body
 
+    # Below there are changes in this client done within the individual homework
 
-#    def get_user_defunkt(self):
-#        r = requests.get('http://api.github.com/users/defunkt')
-#        body = r.json()
-#        return body
-    
-#    def get_non_exist_user(self):
-#        r = requests.get('http://api.github.com/users/butenkosergii')
-#        body = r.json()
-#        return body
+    # Get all contributor commit activity
+    def get_total_commits(self, owner, repo):
+        r = requests.get(f'https://api.github.com/repos/{owner}/{repo}/stats/contributors')
+        body = r.json()
+        status = r.status_code
+        return [status, body]
+
+    # List repository languages
+    def get_repo_languages(self, owner, repo):
+        r = requests.get(f'https://api.github.com/repos/{owner}/{repo}/languages')
+        body = r.json()
+        return body
