@@ -1,5 +1,6 @@
 import pytest
 from modules.common.database import Database
+import datetime as dt
 
 @pytest.mark.database
 def test_database_connection():
@@ -53,3 +54,122 @@ def test_detailed_orders():
     assert orders[0][1] == 'Sergii'
     assert orders[0][2] == 'солодка вода'
     assert orders[0][3] == 'з цукром'
+
+
+# Below there are tests created within the individual homework
+
+# 1
+@pytest.mark.dbind
+def test_corrupted_primary_key():
+    # Check that it is impossible to add a new data row with wrong data type for the primary key (not integer)
+    db = Database()
+    result = db.insert_customers("qwerty", "Petro", "Street 1", "Kiyv", "01000", "Ukraine")
+    assert result == False
+
+# 2
+@pytest.mark.dbind
+def test_no_nulls():
+    # Check that all entries do not have NULL values in all tables
+    db = Database()
+    result1 = db.get_null_entries_customers()
+    result2 = db.get_null_entries_products()
+    result3 = db.get_null_entries_orders()
+    assert result1 == []
+    assert result2 == []
+    assert result3 == []
+
+# 3
+@pytest.mark.dbind
+def test_Sergii_order():
+    # Check that customer Sergii made exactly 1 order
+    db = Database()
+    result = db.get_orders("Sergii")
+    print(result)
+    assert len(result) == 1
+
+# 4
+@pytest.mark.dbind
+def test_no_orders_Stepan():
+    # Check that customer Stepan did not make any orders at all
+    db = Database()
+    result = db.get_orders("Stepan")
+    print(result)
+    assert len(result) == 0
+
+# 5
+@pytest.mark.dbind
+def test_no_orders_Stepan_alternative():
+    # Check that customer Stepan did not make any orders at all
+    # This is another approach to the test #4 above - using LEFT JOIN 
+    db = Database()
+    result = db.get_info_no_orders()
+    # print('\n', result)
+    assert result[0][1] == 'Stepan'
+
+# 6
+@pytest.mark.dbind
+def test_ukrainian_customers():
+    # Check that exactly two customers live in Ukraine
+    db = Database()
+    result = db.get_customer_by_parameter("country", "Ukraine")
+    assert len(result) == 2
+
+# 7
+@pytest.mark.dbind
+def test_ukrainian_customers__alternative():
+    # Check that exactly two customers live in Ukraine
+    # Second approach to the above test - using SQL COUNT
+    db = Database()
+    result = db.count_customers_by_country("Ukraine")
+    assert result[0][0] == 2
+
+# 8
+@pytest.mark.dbind
+def test_stock():
+    # Check that stock of product "печиво" is the biggest
+    db = Database()
+    result = db.get_maximal_stock()
+    print(result[0][0])
+    assert result[0][0] == "печиво"
+
+# 9
+@pytest.mark.dbind
+def test_order_date():
+    # Check that order_date (time) for the orders of customer Sergii is later than 12:00:00
+    check_time = dt.time(12, 0, 0)
+    db = Database()
+    result = db.get_orders("Sergii")
+    result_order_date = [True if dt.datetime.strptime(entry[3], "%H:%M:%S").time() > check_time else False for entry in result]
+    assert all(result_order_date) == True
+
+# 10
+@pytest.mark.dbind
+def test_stock_more_entries():
+    # Check that order_date (time) for the orders of customer Sergii is later than 12:00:00
+    # This is the same test as above #9. A few more entries are added to the table orders to see processing of more data.
+    check_time = dt.time(12, 0, 0)
+    db = Database()
+
+    # Adding a few more entries to orders table:
+    db.insert_orders(2, 1, 2, '13:30:00')
+    db.insert_orders(3, 1, 3, '14:30:04')
+    db.insert_orders(4, 2, 2, '15:45:24')
+
+    # Test itself:
+    result = db.get_orders("Sergii")
+    print('\n', result, '\n')
+    #result_order_date = [dt.datetime.strptime(entry[3], "%H:%M:%S").time() for entry in result]
+    result_order_date = [True if dt.datetime.strptime(entry[3], "%H:%M:%S").time() > check_time else False for entry in result]
+    print(result_order_date)
+    assert all(result_order_date) == True
+
+    # Remove extra test entries:
+    for id in [2, 3, 4]:
+        db.delete_order(id)
+
+
+
+    
+    
+
+

@@ -18,9 +18,10 @@ class ToolsNanohubPage(BasePage):
     def find_ML_tool(self, search_item):
         search_field = self.driver.find_element(By.ID, "toolsSearch")
         search_field.send_keys(search_item)
+        time.sleep(2)
         found_element = self.driver.find_element(By.PARTIAL_LINK_TEXT, search_item)
         found_element.click()
-        time.sleep(1)
+        time.sleep(2)
 
     # the method checks page title
     def check_title(self, expected_title):
