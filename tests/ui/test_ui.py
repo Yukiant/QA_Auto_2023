@@ -1,5 +1,4 @@
 import pytest
-
 from selenium import webdriver
 from selenium.webdriver.safari.service import Service
 from selenium.webdriver.common.by import By
@@ -9,9 +8,7 @@ import time
 @pytest.mark.ui
 def test_check_incorrect_username():
     # Create an object instance to access the browser
-    driver = webdriver.Safari(
-        service=Service(r"/usr/bin/safaridriver")
-        )
+    driver = webdriver.Safari(service=Service(r"/usr/bin/safaridriver"))
 
     # open web page
     driver.get("https://github.com/login")
@@ -39,4 +36,4 @@ def test_check_incorrect_username():
     # time.sleep(3)
 
     # close the browser
-    driver.close() 
+    driver.close()
