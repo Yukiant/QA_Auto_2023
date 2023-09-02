@@ -71,9 +71,7 @@ def test_detailed_orders():
 def test_corrupted_primary_key():
     """Check that it is impossible to add a new data row with wrong data type for the primary key (not integer)"""
     db = Database()
-    result = db.insert_customers(
-        "qwerty", "Petro", "Street 1", "Kiyv", "01000", "Ukraine"
-    )
+    result = db.insert_customers("not_integer_key", "Petro", "Street 1", "Kiyv", "01000", "Ukraine")
     assert result == False
 
 
@@ -177,20 +175,18 @@ def test_stock_more_entries():
     db = Database()
 
     # Adding a few more entries to orders table:
+
     db.insert_orders(2, 1, 2, "13:30:00")
     db.insert_orders(3, 1, 3, "14:30:04")
     db.insert_orders(4, 2, 2, "15:45:24")
 
     # Test itself:
+
     result = db.get_orders("Sergii")
-    result_order_date = [
-        True
-        if dt.datetime.strptime(entry[3], "%H:%M:%S").time() > check_time
-        else False
-        for entry in result
-    ]
+    result_order_date = [True if dt.datetime.strptime(entry[3], "%H:%M:%S").time() > check_time else False for entry in result]
     assert all(result_order_date) == True
 
     # Remove extra test entries:
+
     for id in [2, 3, 4]:
         db.delete_order(id)

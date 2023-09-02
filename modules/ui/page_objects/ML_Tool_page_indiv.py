@@ -19,11 +19,6 @@ class MLToolPage(BasePage):
         """Class constructor"""
         super().__init__()
 
-    def go_to(self):
-        """The method opens the URL in the browser"""
-        self.driver.maximize_window()
-        self.driver.get(MLToolPage.URL)
-
     def go_back(self):
         """The method navigates to a previous browser page"""
         self.driver.back()
@@ -41,15 +36,18 @@ class MLToolPage(BasePage):
         """The method finds a link to the downloadable document file and saves the renamed file to the project folder"""
         link_elem = self.driver.find_element(By.PARTIAL_LINK_TEXT, resource_name)
         fullpath = link_elem.get_attribute("href")
-        filereq = requests.get(fullpath, stream=True)
-        with open(f"{new_file_name}.pdf", "wb") as receive:
-            shutil.copyfileobj(filereq.raw, receive)
+        try:
+            filereq = requests.get(fullpath, stream=True)
+            with open(f"{new_file_name}.pdf", "wb") as receive:
+                shutil.copyfileobj(filereq.raw, receive)
+        except:
+            print("Downloading error!")
+            return False
+        else:
+            print("Download Ok!")
+            return True
 
-    def check_title(self, expected_title):
-        """The method checks page title"""
-        return self.driver.title == expected_title
-
-    def launchTool(self):
+    def launch_tool(self):
         """The method tries to launch the tool by clicking Launch button"""
         # click on Launch Tool button
         launch_button = self.driver.find_element(By.ID, MLToolPage.launch_button_id)
@@ -67,4 +65,9 @@ class MLToolPage(BasePage):
     def get_version(self):
         """The method returns current version of the tool"""
         t = self.driver.find_element(By.CLASS_NAME, MLToolPage.version_id).text
+
         return float(t.split()[1])
+
+    def check_title(self, expected_title):
+        """The method checks page title"""
+        return self.driver.title == expected_title

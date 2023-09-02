@@ -7,48 +7,37 @@ import os.path
 
 # 1
 @pytest.mark.nano
-def test_check_navigate_to_about_us():
+def test_check_navigate_to_about_us(open_HomeNanohubPage):
     """check that it is possible to navigate from NanoHUB home page to About Us page through the top menu"""
     submenu = "About"
     submenuItem = "What is nanoHUB?"
     expected_title = "nanoHUB.org - About Us"
 
-    home_page = HomeNanohubPage()
-    home_page.go_to()
-    home_page.choose_from_submenu(submenu, submenuItem)
-    assert home_page.check_title(expected_title)
-    home_page.close()
+    open_HomeNanohubPage.choose_from_submenu(submenu, submenuItem)
+    assert open_HomeNanohubPage.check_title(expected_title)
 
 
 # 2
 @pytest.mark.nano
-def test_check_navigate_to_tools():
+def test_check_navigate_to_tools(open_HomeNanohubPage):
     """check that it is possible to navigate from NanoHUB home page to Resources: Tools page through the top menu"""
     submenu = "Explore"
     submenuItem = "Tools"
     expected_title = "nanoHUB.org - Resources: Tools"
 
-    home_page = HomeNanohubPage()
-    home_page.go_to()
-    home_page.choose_from_submenu(submenu, submenuItem)
-    assert home_page.check_title(expected_title)
-    home_page.close()
+    open_HomeNanohubPage.choose_from_submenu(submenu, submenuItem)
+    assert open_HomeNanohubPage.check_title(expected_title)
 
 
 # 3
 @pytest.mark.nano
-def test_find_ML_tool():
+def test_find_ML_tool(open_ToolsNanohubPage):
     """check that it is possible to navigate to a specific ML tool page using the tool search"""
     tool_to_navigate = "Machine Learning for Materials Science"
-    expected_title = (
-        "nanoHUB.org - Resources: Machine Learning for Materials Science: Part 1"
-    )
+    expected_title = "nanoHUB.org - Resources: Machine Learning for Materials Science: Part 1"
 
-    tools_page = ToolsNanohubPage()
-    tools_page.go_to()
-    tools_page.find_ML_tool(tool_to_navigate)
-    assert tools_page.check_title(expected_title)
-    tools_page.close()
+    open_ToolsNanohubPage.find_ML_tool(tool_to_navigate)
+    assert open_ToolsNanohubPage.check_title(expected_title)
 
 
 # 4
@@ -68,13 +57,12 @@ def test_supporting_doc(open_MLToolPage):
     rename_to = "supporting_doc"
     path_to_download = "/Users/Yuliia/Desktop/QAAuto/QA_Auto_2023/"
     
-    # Go to Supporting Docs subtab and click to download documentation in pdf
+    # Go to Supporting Docs subtab and click to download documentation in pdf:
+
     open_MLToolPage.go_supporting_docs()
-    open_MLToolPage.download_resource(resource_to_download, rename_to)
-    assert (
-        os.path.isfile(path_to_download + f"{rename_to}.pdf")
-        == True
-    )
+    if_downloaded = open_MLToolPage.download_resource(resource_to_download, rename_to)
+    assert if_downloaded == True
+    assert os.path.isfile(path_to_download + f"{rename_to}.pdf") == True
 
 
 # 6
@@ -83,6 +71,6 @@ def test_launch_ML_tool_not_possible(open_MLToolPage):
     """check that click on the Launch Tool button without login redirects to a login page"""
     expected_title = "nanoHUB.org - Login"
 
-    open_MLToolPage.launchTool()
+    open_MLToolPage.launch_tool()
     assert open_MLToolPage.check_title(expected_title)
     open_MLToolPage.go_back()

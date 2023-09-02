@@ -62,10 +62,51 @@ class Database:
             self.cursor.execute(query)
             self.connection.commit()
         except:
+            print(f"Cannot insert a customer with id = {id} into customers!")
             return False
         else:
             return True
 
+    def get_orders(self, customer_name):
+        """Get order entries for a customer"""
+        query = f"SELECT c.id, c.name, o.id, o.order_date from orders o JOIN customers c ON o.customer_id = c.id WHERE c.name = '{customer_name}'"
+        self.cursor.execute(query)
+        record = self.cursor.fetchall()
+
+        return record
+
+    def get_info_no_orders(self):
+        """Get customers which have no orders at all (no entries in orders table)"""
+        query = f"SELECT c.id, c.name from customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.customer_id IS NULL"
+        self.cursor.execute(query)
+        record = self.cursor.fetchall()
+
+        return record
+
+    def get_null_entries_customers(self):
+        """Find NULL values in customers table"""
+        query = f"SELECT * from customers WHERE name IS NULL OR address IS NULL OR city IS NULL OR postalCode IS NULL OR country IS NULL"
+        self.cursor.execute(query)
+        record = self.cursor.fetchall()
+
+        return record
+
+    def count_customers_by_country(self, country):
+        """Count number of customers living in a specific country"""
+        query = f"SELECT COUNT(*) FROM customers WHERE country = '{country}'"
+        self.cursor.execute(query)
+        record = self.cursor.fetchall()
+
+        return record
+
+    def get_maximal_stock(self):
+        """Get the product entry which has maximal stock (quantity)"""
+        query = f"SELECT name, MAX(quantity) FROM products"
+        self.cursor.execute(query)
+        record = self.cursor.fetchall()
+
+        return record
+    
     def delete_customer_by_id(self, customer_id):
         """Delete an entry in customers table"""
         query = f"DELETE FROM customers WHERE id = {customer_id}"
@@ -84,18 +125,12 @@ class Database:
         self.cursor.execute(query)
         self.connection.commit()
 
-    def get_null_entries_customers(self):
-        """Find NULL values in customers table"""
-        query = f"SELECT * from customers WHERE name IS NULL OR address IS NULL OR city IS NULL OR postalCode IS NULL OR country IS NULL"
-        self.cursor.execute(query)
-        record = self.cursor.fetchall()
-        return record
-
     def get_null_entries_products(self):
         """Find NULL values in products table"""
         query = f"SELECT * from products WHERE name IS NULL OR description IS NULL OR quantity IS NULL"
         self.cursor.execute(query)
         record = self.cursor.fetchall()
+
         return record
 
     def get_null_entries_orders(self):
@@ -103,27 +138,7 @@ class Database:
         query = f"SELECT * from orders WHERE customer_id IS NULL OR product_id IS NULL OR order_date IS NULL"
         self.cursor.execute(query)
         record = self.cursor.fetchall()
-        return record
 
-    def get_orders(self, customer_name):
-        """Get order entries for a customer"""
-        query = f"SELECT c.id, c.name, o.id, o.order_date from orders o JOIN customers c ON o.customer_id = c.id WHERE c.name = '{customer_name}'"
-        self.cursor.execute(query)
-        record = self.cursor.fetchall()
-        return record
-
-    def get_info_no_orders(self):
-        """Get customers which have no orders at all (no entries in orders table)"""
-        query = f"SELECT c.id, c.name from customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.customer_id IS NULL"
-        self.cursor.execute(query)
-        record = self.cursor.fetchall()
-        return record
-
-    def get_maximal_stock(self):
-        """Get the product entry which has maximal stock (quantity)"""
-        query = f"SELECT name, MAX(quantity) FROM products"
-        self.cursor.execute(query)
-        record = self.cursor.fetchall()
         return record
 
     def get_customer_by_parameter(self, parameter, value):
@@ -131,11 +146,5 @@ class Database:
         query = f"SELECT * FROM customers WHERE {parameter} = '{value}'"
         self.cursor.execute(query)
         record = self.cursor.fetchall()
-        return record
 
-    def count_customers_by_country(self, country):
-        """Count number of customers living in a specific country"""
-        query = f"SELECT COUNT(*) FROM customers WHERE country = '{country}'"
-        self.cursor.execute(query)
-        record = self.cursor.fetchall()
         return record

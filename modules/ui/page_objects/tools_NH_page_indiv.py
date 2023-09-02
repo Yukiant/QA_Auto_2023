@@ -12,11 +12,6 @@ class ToolsNanohubPage(BasePage):
         """Class constructor"""
         super().__init__()
 
-    def go_to(self):
-        """The method opens the URL in the browser"""
-        self.driver.maximize_window()
-        self.driver.get(ToolsNanohubPage.URL)
-
     def find_ML_tool(self, search_item):
         """The method enters search data into the tool search field"""
         # enter data into the search field

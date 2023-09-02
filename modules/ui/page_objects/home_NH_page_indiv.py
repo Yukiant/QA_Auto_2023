@@ -12,15 +12,6 @@ class HomeNanohubPage(BasePage):
         """Class constructor"""
         super().__init__()
 
-    def go_to(self):
-        """The method opens the URL in the browser"""
-        self.driver.maximize_window()
-        self.driver.get(HomeNanohubPage.URL)
-
-    def check_title(self, expected_title):
-        """The method checks page title"""
-        return self.driver.title == expected_title
-
     def choose_from_submenu(self, submenu, submenuItem):
         """The method opens submenu under a top menu and chooses a submenu item"""
         # hover mouse pointer over a submenu
@@ -44,3 +35,7 @@ class HomeNanohubPage(BasePage):
                 EC.title_contains(f"{submenu}"), EC.title_contains(f"{submenuItem}")
             )
         )
+
+    def check_title(self, expected_title):
+        """The method checks page title"""
+        return self.driver.title == expected_title
